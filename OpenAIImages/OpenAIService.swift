@@ -50,12 +50,10 @@ enum OpenAIAPI {
 
 class OpenAIService {
     
-    func generateImage(prompt: String, size: String)  async throws{
+    func generateImage(prompt: String, size: String, onSuccess: @escaping (AIImages)->(), onError: @escaping (String)-> )  {
         
         let request = OpenAIAPI.generateImage(prompt, size).request
         
-        let (data, response) = try await URLSession.shared.data(for: request)
-
         #warning("HIER GEHTS WEITER")
     }
     
