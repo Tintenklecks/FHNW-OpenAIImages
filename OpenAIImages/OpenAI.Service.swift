@@ -7,12 +7,6 @@
 
 import Foundation
 
-// MARK: - Secret
-
-struct Secret {
-    static var apiKey = "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"
-}
-
 // MARK: - OpenAIAPI
 
 enum OpenAIAPI {
