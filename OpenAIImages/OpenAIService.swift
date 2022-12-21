@@ -125,4 +125,17 @@ enum OpenAIService {
         }
         .resume()
     }
+
+    static func generateImage(prompt: String, size: String) async throws -> AIImages {
+        let request = OpenAIAPI.generateImage(prompt, size).request
+        let (data, response) = try await URLSession.shared.data(for: request)
+        if let httpResponse = response as? HTTPURLResponse,
+           httpResponse.statusCode >= 300
+        {
+            throw NetworkError.httpError(httpResponse.statusCode)
+        }
+
+        let result = try JSONDecoder().decode(AIImages.self, from: data)
+        return result
+    }
 }
