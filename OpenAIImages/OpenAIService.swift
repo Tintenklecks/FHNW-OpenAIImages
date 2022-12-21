@@ -50,20 +50,13 @@ enum OpenAIAPI {
 
 class OpenAIService {
     
-    func generateImage(prompt: String, size: String, onSuccess: @escaping (AIImages)->(), onError: @escaping (String)-> )  {
-        
-        let request = OpenAIAPI.generateImage(prompt, size).request
-        
+////    func generateImage(prompt: String, size: String, onSuccess: @escaping (AIImages)->(), onError: @escaping (String)-> )  {
+//
+//        let request = OpenAIAPI.generateImage(prompt, size).request
+//
         #warning("HIER GEHTS WEITER")
-    }
+//    }
     
     
 }
 
-// MARK: - ImageBody
-
-struct ImageBody: Codable {
-    let prompt: String
-    let n: Int
-    let size: String
-}

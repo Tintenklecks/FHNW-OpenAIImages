@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AAA5BDEF295365DB003E36DC /* OpenAI structures.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA5BDEE295365DB003E36DC /* OpenAI structures.swift */; };
 		AAA66386294B577F00033973 /* OpenAIImagesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA66385294B577F00033973 /* OpenAIImagesApp.swift */; };
 		AAA66388294B577F00033973 /* OpenAIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA66387294B577F00033973 /* OpenAIImageView.swift */; };
 		AAA6638A294B578400033973 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AAA66389294B578400033973 /* Assets.xcassets */; };
@@ -37,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AAA5BDEE295365DB003E36DC /* OpenAI structures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenAI structures.swift"; sourceTree = "<group>"; };
 		AAA66382294B577F00033973 /* OpenAIImages.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenAIImages.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AAA66385294B577F00033973 /* OpenAIImagesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIImagesApp.swift; sourceTree = "<group>"; };
 		AAA66387294B577F00033973 /* OpenAIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIImageView.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 			children = (
 				AAA66385294B577F00033973 /* OpenAIImagesApp.swift */,
 				AAA663B4294B5B9800033973 /* OpenAIService.swift */,
+				AAA5BDEE295365DB003E36DC /* OpenAI structures.swift */,
 				AAA663B3294B58AA00033973 /* OpenAIImageView */,
 				AAA66389294B578400033973 /* Assets.xcassets */,
 				AAA6638B294B578400033973 /* Preview Content */,
@@ -276,6 +279,7 @@
 			files = (
 				AAA66388294B577F00033973 /* OpenAIImageView.swift in Sources */,
 				AAA663B0294B57DD00033973 /* OpenAIImageView.Viewmodel.swift in Sources */,
+				AAA5BDEF295365DB003E36DC /* OpenAI structures.swift in Sources */,
 				AAA663B5294B5B9800033973 /* OpenAIService.swift in Sources */,
 				AAA66386294B577F00033973 /* OpenAIImagesApp.swift in Sources */,
 				AAA663B2294B589200033973 /* OpenAIImageView.Model.swift in Sources */,
