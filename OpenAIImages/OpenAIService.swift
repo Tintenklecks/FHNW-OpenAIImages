@@ -50,12 +50,40 @@ enum OpenAIAPI {
 
 class OpenAIService {
     
-////    func generateImage(prompt: String, size: String, onSuccess: @escaping (AIImages)->(), onError: @escaping (String)-> )  {
-//
-//        let request = OpenAIAPI.generateImage(prompt, size).request
-//
-        #warning("HIER GEHTS WEITER")
-//    }
+    
+    static func generateImage(prompt: String, size: String,
+                              onSuccess: @escaping (AIImages) -> (),
+                              onError: @escaping (String) -> ()) {
+        let request = OpenAIAPI.generateImage(prompt, size).request
+
+        URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let response = response as? HTTPURLResponse {
+                if response.statusCode >= 300 {
+                    onError("Status code \(response.statusCode)")
+                    return
+                }
+            }
+
+            if let error {
+                onError("Error \(error.localizedDescription)")
+                return
+            }
+
+            guard let data else {
+                onError("No data available")
+                return
+            }
+
+            do {
+                let result = try JSONDecoder().decode(AIImages.self, from: data)
+                onSuccess(result)
+            } catch let error  {
+                print(error.localizedDescription)
+            }
+        }
+        .resume()
+    }
     
     
 }

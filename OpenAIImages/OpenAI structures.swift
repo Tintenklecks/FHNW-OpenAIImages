@@ -16,8 +16,8 @@ struct ImageBody: Codable {
 }
 
 
-// MARK: - AllImages
-struct AllImages: Codable {
+// MARK: - AIImages
+struct AIImages: Codable {
     let created: Int
     let data: [Datum]
 }
