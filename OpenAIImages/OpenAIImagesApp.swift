@@ -11,15 +11,30 @@ import SwiftUI
 struct OpenAIImagesApp: App {
     
     init() {
-        OpenAIService.generateImage(
-            prompt: "Blumen Stil von salvadore Dali",
-            size: "256x256") { images in
-            for url in images.data {
-                print(url)
+    
+        OpenAIService.generateImage(prompt: "Blumen Stil von salvadore Dali", size: "256x256") { result in
+            switch result {
+            case .success(let images):
+                for url in images.data {
+                    print(url)
+                }
+            case .failure(let error):
+                print("\(error.localizedDescription)")
             }
-        } onError: { error in
-            print(error)
         }
+        
+        
+        
+        
+//        OpenAIService.generateImage(
+//            prompt: "Blumen Stil von salvadore Dali",
+//            size: "256x256") { images in
+//            for url in images.data {
+//                print(url)
+//            }
+//        } onError: { error in
+//            print(error)
+//        }
 
     }
 

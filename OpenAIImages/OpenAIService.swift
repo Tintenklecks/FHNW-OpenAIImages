@@ -13,6 +13,16 @@ struct Secret {
     static var apiKey = "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"
 }
 
+// MARK: - NetworkError
+
+enum NetworkError: Error {
+    case decoding
+    case internet
+    case noData
+    case httpError(Int)
+    case misc(String)
+}
+
 // MARK: - OpenAIAPI
 
 enum OpenAIAPI {
@@ -48,12 +58,11 @@ enum OpenAIAPI {
 
 // MARK: - OpenAIService
 
-class OpenAIService {
-    
-    
+enum OpenAIService {
     static func generateImage(prompt: String, size: String,
                               onSuccess: @escaping (AIImages) -> (),
-                              onError: @escaping (String) -> ()) {
+                              onError: @escaping (String) -> ())
+    {
         let request = OpenAIAPI.generateImage(prompt, size).request
 
         URLSession.shared.dataTask(with: request) {
@@ -78,13 +87,42 @@ class OpenAIService {
             do {
                 let result = try JSONDecoder().decode(AIImages.self, from: data)
                 onSuccess(result)
-            } catch let error  {
+            } catch {
                 print(error.localizedDescription)
             }
         }
         .resume()
     }
-    
-    
-}
 
+    static func generateImage(prompt: String, size: String, completion: @escaping (Result<AIImages, NetworkError>) -> ()) {
+        let request = OpenAIAPI.generateImage(prompt, size).request
+
+        URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let response = response as? HTTPURLResponse {
+                if response.statusCode >= 300 {
+                    completion(.failure(.httpError(response.statusCode)))
+                    return
+                }
+            }
+
+            if let error {
+                completion(.failure(.misc(error.localizedDescription)))
+                return
+            }
+
+            guard let data else {
+                completion(.failure(.noData))
+                return
+            }
+
+            do {
+                let result = try JSONDecoder().decode(AIImages.self, from: data)
+                completion(.success(result))
+            } catch {
+                completion(.failure(.misc(error.localizedDescription)))
+            }
+        }
+        .resume()
+    }
+}
