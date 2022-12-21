@@ -13,16 +13,6 @@ struct Secret {
     static var apiKey = "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"
 }
 
-// MARK: - NetworkError
-
-enum NetworkError: Error {
-    case decoding
-    case internet
-    case noData
-    case httpError(Int)
-    case misc(String)
-}
-
 // MARK: - OpenAIAPI
 
 enum OpenAIAPI {
