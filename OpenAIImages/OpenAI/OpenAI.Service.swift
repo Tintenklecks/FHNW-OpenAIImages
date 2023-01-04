@@ -7,6 +7,45 @@
 
 import Foundation
 
+// MARK: - OpenAIAPI
+
+enum OpenAIAPI {
+    case generateImage(String, String)
+    case moderate(String)
+
+    var url: URL {
+        switch self {
+        case .generateImage:
+            return URL(string: "https://api.openai.com/v1/images/generations")!
+        case .moderate:
+            return URL(string: "https://api.openai.com/v1/moderations")!
+        }
+    }
+
+    var httpMethod: String {
+        switch self {
+        default: return "POST"
+        }
+    }
+
+    var request: URLRequest {
+        var localRequest = URLRequest(url: self.url)
+        localRequest.httpMethod = self.httpMethod
+        localRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        localRequest.setValue("Bearer \(Secret.apiKey)", forHTTPHeaderField: "Authorization")
+
+        switch self {
+        case .generateImage(let prompt, let size):
+            let body = ImageBody(prompt: prompt, n: 1, size: size)
+            localRequest.httpBody = try? JSONEncoder().encode(body)
+            return localRequest
+        case .moderate(let prompt):
+            let body = ModerationBody(input: prompt)
+            localRequest.httpBody = try? JSONEncoder().encode(body)
+            return localRequest
+        }
+    }
+}
 
 // MARK: - OpenAIService
 
@@ -83,11 +122,24 @@ class OpenAIService {
         let result = try await NetworkService.load(from: request, convertTo: AIImages.self)
         return result
     }
-    
-    static func getModeration(prompt: String) async throws -> Moderation {
-        let request = OpenAIEndpoints.moderation(prompt).request
-        let result = try await NetworkService.load(from: request, convertTo: Moderation.self)
-        return result
-    }
 
+    static func checkWords(prompt: String) async throws -> Bool {
+        let request = OpenAIAPI.moderate(prompt).request
+        let (data, response) = try await URLSession.shared.data(for: request)
+        if let httpResponse = response as? HTTPURLResponse,
+           httpResponse.statusCode >= 300
+        {
+            throw NetworkError.httpError(httpResponse.statusCode)
+        }
+
+        let moderation = try JSONDecoder().decode(Moderation.self, from: data)
+        guard let entry = moderation.results.first?.categories else {
+            return false
+        }
+
+        return !(entry.hate || entry.hateThreatening ||
+            entry.selfHarm || entry.sexual ||
+            entry.sexualMinors || entry.violence ||
+            entry.violenceGraphic)
+    }
 }
