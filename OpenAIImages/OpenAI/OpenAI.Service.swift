@@ -7,48 +7,16 @@
 
 import Foundation
 
-// MARK: - OpenAIAPI
-
-enum OpenAIAPI {
-    case generateImage(String, String)
-
-    var url: URL {
-        switch self {
-        case .generateImage:
-            return URL(string: "https://api.openai.com/v1/images/generations")!
-        }
-    }
-
-    var httpMethod: String {
-        switch self {
-        default: return "POST"
-        }
-    }
-
-    var request: URLRequest {
-        var localRequest = URLRequest(url: self.url)
-        localRequest.httpMethod = self.httpMethod
-        localRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        localRequest.setValue("Bearer \(Secret.apiKey)", forHTTPHeaderField: "Authorization")
-
-        switch self {
-        case .generateImage(let prompt, let size):
-            let body = ImageBody(prompt: prompt, n: 1, size: size)
-            localRequest.httpBody = try? JSONEncoder().encode(body)
-            return localRequest
-        }
-    }
-}
 
 // MARK: - OpenAIService
 
-enum OpenAIService {
+class OpenAIService {
     static func generateImage(prompt: String, size: String,
                               onSuccess: @escaping (AIImages) -> (),
                               onError: @escaping (String) -> ())
     {
-        let request = OpenAIAPI.generateImage(prompt, size).request
-
+        let request = OpenAIEndpoints.generateImage(prompt, size).request
+        
         URLSession.shared.dataTask(with: request) {
             data, response, error in
             if let response = response as? HTTPURLResponse {
@@ -57,17 +25,17 @@ enum OpenAIService {
                     return
                 }
             }
-
+            
             if let error {
                 onError("Error \(error.localizedDescription)")
                 return
             }
-
+            
             guard let data else {
                 onError("No data available")
                 return
             }
-
+            
             do {
                 let result = try JSONDecoder().decode(AIImages.self, from: data)
                 onSuccess(result)
@@ -77,10 +45,10 @@ enum OpenAIService {
         }
         .resume()
     }
-
+    
     static func generateImage(prompt: String, size: String, completion: @escaping (Result<AIImages, NetworkError>) -> ()) {
-        let request = OpenAIAPI.generateImage(prompt, size).request
-
+        let request = OpenAIEndpoints.generateImage(prompt, size).request
+        
         URLSession.shared.dataTask(with: request) {
             data, response, error in
             if let response = response as? HTTPURLResponse {
@@ -89,17 +57,17 @@ enum OpenAIService {
                     return
                 }
             }
-
+            
             if let error {
                 completion(.failure(.misc(error.localizedDescription)))
                 return
             }
-
+            
             guard let data else {
                 completion(.failure(.noData))
                 return
             }
-
+            
             do {
                 let result = try JSONDecoder().decode(AIImages.self, from: data)
                 completion(.success(result))
@@ -109,17 +77,17 @@ enum OpenAIService {
         }
         .resume()
     }
-
+    
     static func generateImage(prompt: String, size: String) async throws -> AIImages {
-        let request = OpenAIAPI.generateImage(prompt, size).request
-        let (data, response) = try await URLSession.shared.data(for: request)
-        if let httpResponse = response as? HTTPURLResponse,
-           httpResponse.statusCode >= 300
-        {
-            throw NetworkError.httpError(httpResponse.statusCode)
-        }
-
-        let result = try JSONDecoder().decode(AIImages.self, from: data)
+        let request = OpenAIEndpoints.generateImage(prompt, size).request
+        let result = try await NetworkService.load(from: request, convertTo: AIImages.self)
         return result
     }
+    
+    static func getModeration(prompt: String) async throws -> Moderation {
+        let request = OpenAIEndpoints.moderation(prompt).request
+        let result = try await NetworkService.load(from: request, convertTo: Moderation.self)
+        return result
+    }
+
 }

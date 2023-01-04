@@ -26,8 +26,18 @@ extension OpenAIImageView {
         var model = Model()
         
         func renderImage() {
-            
-            
+            Task {
+                do {
+                    
+                    let url = try await model.generateImage(prompt: prompt, size: size.name)
+                    
+                    DispatchQueue.main.async {
+                        self.imageUrl = url
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
             
         }
     }
